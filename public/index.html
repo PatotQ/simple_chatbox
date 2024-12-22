@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Chatbox</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px; }
+    input, button { padding: 10px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div id="messages"></div>
+  <form id="chat-form">
+    <input type="text" id="message-input" placeholder="Type your message..." required>
+    <button type="submit">Send</button>
+  </form>
+  <script>
+    const messagesDiv = document.getElementById('messages');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message-input');
+
+    // Fetch messages and display them
+    async function loadMessages() {
+      const response = await fetch('/messages');
+      const messages = await response.json();
+      messagesDiv.innerHTML = messages.map(msg => `<p>${msg.content}</p>`).join('');
+    }
+
+    // Send a new message
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const content = input.value;
+      await fetch('/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: { content } })
+      });
+      input.value = '';
+      loadMessages();
+    });
+
+    // Initial load
+    loadMessages();
+    setInterval(loadMessages, 2000); // Refresh every 2 seconds
+  </script>
+</body>
+</html>
