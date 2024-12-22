@@ -1,2 +1,5 @@
 class Message < ApplicationRecord
-end
+    validates :content, presence: true
+    validates :message_type, inclusion: { in: %w[greeting help fun_fact unknown] }
+  end
+  
